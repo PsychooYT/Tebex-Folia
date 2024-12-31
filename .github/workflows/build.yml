@@ -42,5 +42,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Tebex-Minecraft plugin
-          path: bukkit/build/libs/*.jar
+          path: Tebex-Minecraft-Patchs/bukkit/build/libs/*.jar
             
