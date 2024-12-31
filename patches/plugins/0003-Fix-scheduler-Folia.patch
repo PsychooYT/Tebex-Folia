@@ -1,0 +1,25 @@
+From dfd6b51e6dc14451f22ee3d4a01230b79f50422b Mon Sep 17 00:00:00 2001
+From: Euphyllia Bierque <bierque.euphyllia@gmail.com>
+Date: Tue, 31 Dec 2024 02:19:07 +0100
+Subject: [PATCH 3/3] Fix scheduler Folia
+
+---
+ bukkit/src/main/java/io/tebex/plugin/gui/ListingGui.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/bukkit/src/main/java/io/tebex/plugin/gui/ListingGui.java b/bukkit/src/main/java/io/tebex/plugin/gui/ListingGui.java
+index 214a3c4..b2025b8 100644
+--- a/bukkit/src/main/java/io/tebex/plugin/gui/ListingGui.java
++++ b/bukkit/src/main/java/io/tebex/plugin/gui/ListingGui.java
+@@ -89,7 +89,7 @@ public class ListingGui implements InventoryHolder {
+             this.inventory.setItem(guiItems.getKey(), stack);
+         }
+ 
+-        player.openInventory(this.inventory);
++        player.getScheduler().run(io.tebex.plugin.TebexPlugin.getPlugin(io.tebex.plugin.TebexPlugin.class), task -> player.openInventory(this.inventory), null); // Euphyllia - Fix scheduler Folia
+     }
+ 
+     public void setItem(int slot, TebexGuiItem guiItem) {
+-- 
+2.47.1.windows.1
+

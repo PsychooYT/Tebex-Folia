@@ -1,0 +1,77 @@
+From 2d24a896f62ea270873f5f205a93ec7eeaeef654 Mon Sep 17 00:00:00 2001
+From: Euphyllia Bierque <bierque.euphyllia@gmail.com>
+Date: Tue, 31 Dec 2024 02:19:07 +0100
+Subject: [PATCH 2/3] Use Folia Scheduler
+
+---
+ .../java/io/tebex/plugin/TebexPlugin.java     | 19 +++++++++----------
+ 1 file changed, 9 insertions(+), 10 deletions(-)
+
+diff --git a/bukkit/src/main/java/io/tebex/plugin/TebexPlugin.java b/bukkit/src/main/java/io/tebex/plugin/TebexPlugin.java
+index 33fe44a..afa005b 100644
+--- a/bukkit/src/main/java/io/tebex/plugin/TebexPlugin.java
++++ b/bukkit/src/main/java/io/tebex/plugin/TebexPlugin.java
+@@ -102,14 +102,13 @@ public final class TebexPlugin extends JavaPlugin implements Platform {
+         registerEvents(new JoinListener(this));
+         registerEvents(new InventoryClickListener());
+ 
+-        getServer().getScheduler().runTaskTimerAsynchronously(this, this::refreshListings, 0, 20 * 60 * 5);
+-
++        getServer().getAsyncScheduler().runAtFixedRate(this, task -> refreshListings(), 0, 20 * 60 * 5 * 50, TimeUnit.MILLISECONDS); // Euphyllia - Use Folia Scheduler
+         // every 10 minutes clear the plugin event queue
+-        getServer().getScheduler().runTaskTimerAsynchronously(this, () -> {
++        getServer().getAsyncScheduler().runAtFixedRate(this, (task) -> { // Euphyllia - Use Folia Scheduler
+             this.getSDK().sendPluginEvents();
+-        }, 0, 60 * 20 * 10);
++        }, 1, 60 * 20 * 10 * 50, TimeUnit.MILLISECONDS); // Euphyllia - Use Folia Scheduler
+ 
+-        getServer().getScheduler().runTaskTimerAsynchronously(this, () -> {
++        getServer().getAsyncScheduler().runAtFixedRate(this, (task) -> { // Euphyllia - Use Folia Scheduler
+             List<ServerEvent> runEvents = Lists.newArrayList(serverEvents.subList(0, Math.min(serverEvents.size(), 750)));
+             if (runEvents.isEmpty()) return;
+             if (!this.isSetup()) return;
+@@ -123,7 +122,7 @@ public final class TebexPlugin extends JavaPlugin implements Platform {
+                         debug("Failed to send join events: " + throwable.getMessage());
+                         return null;
+                     });
+-        }, 0, 20 * 60);
++        }, 1, 20 * 60 * 50, TimeUnit.MILLISECONDS); // Euphyllia - Use Folia Scheduler
+ 
+         registerBuyCommand();
+     }
+@@ -318,28 +317,28 @@ public final class TebexPlugin extends JavaPlugin implements Platform {
+     public void executeAsync(Runnable runnable) {
+         if (!isEnabled()) return;
+ 
+-        getServer().getScheduler().runTaskAsynchronously(this, runnable);
++        getServer().getAsyncScheduler().runNow(this, task -> runnable.run()); // Euphyllia - Use Folia Scheduler
+     }
+ 
+     @Override
+     public void executeAsyncLater(Runnable runnable, long time, TimeUnit unit) {
+         if (!isEnabled()) return;
+ 
+-        getServer().getScheduler().runTaskLaterAsynchronously(this, runnable, unit.toMillis(time) / 50);
++        getServer().getAsyncScheduler().runDelayed(this, task -> runnable.run(), time, unit); // Euphyllia - Use Folia Scheduler
+     }
+ 
+     @Override
+     public void executeBlocking(Runnable runnable) {
+         if (!isEnabled()) return;
+ 
+-        getServer().getScheduler().runTask(this, runnable);
++        getServer().getGlobalRegionScheduler().run(this, task -> runnable.run()); // Euphyllia - Use Folia Scheduler
+     }
+ 
+     @Override
+     public void executeBlockingLater(Runnable runnable, long time, TimeUnit unit) {
+         if (!isEnabled()) return;
+ 
+-        getServer().getScheduler().runTaskLater(this, runnable, unit.toMillis(time) / 50);
++        getServer().getGlobalRegionScheduler().runDelayed(this, task -> runnable.run(), unit.toMillis(time) / 50); // Euphyllia - Use Folia Scheduler
+     }
+ 
+     public Player getPlayer(Object player) {
+-- 
+2.47.1.windows.1
+
