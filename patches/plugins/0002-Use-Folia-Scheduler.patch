@@ -17,13 +17,13 @@ index 33fe44a..afa005b 100644
  
 -        getServer().getScheduler().runTaskTimerAsynchronously(this, this::refreshListings, 0, 20 * 60 * 5);
 -
-+        getServer().getAsyncScheduler().runAtFixedRate(this, task -> refreshListings(), 0, 20 * 60 * 5 * 50, TimeUnit.MILLISECONDS); // Euphyllia - Use Folia Scheduler
++        getServer().getAsyncScheduler().runAtFixedRate(this, task -> refreshListings(), 50, 20 * 60 * 5 * 50, TimeUnit.MILLISECONDS); // Euphyllia - Use Folia Scheduler
          // every 10 minutes clear the plugin event queue
 -        getServer().getScheduler().runTaskTimerAsynchronously(this, () -> {
 +        getServer().getAsyncScheduler().runAtFixedRate(this, (task) -> { // Euphyllia - Use Folia Scheduler
              this.getSDK().sendPluginEvents();
 -        }, 0, 60 * 20 * 10);
-+        }, 1, 60 * 20 * 10 * 50, TimeUnit.MILLISECONDS); // Euphyllia - Use Folia Scheduler
++        }, 50, 60 * 20 * 10 * 50, TimeUnit.MILLISECONDS); // Euphyllia - Use Folia Scheduler
  
 -        getServer().getScheduler().runTaskTimerAsynchronously(this, () -> {
 +        getServer().getAsyncScheduler().runAtFixedRate(this, (task) -> { // Euphyllia - Use Folia Scheduler
@@ -35,7 +35,7 @@ index 33fe44a..afa005b 100644
                          return null;
                      });
 -        }, 0, 20 * 60);
-+        }, 1, 20 * 60 * 50, TimeUnit.MILLISECONDS); // Euphyllia - Use Folia Scheduler
++        }, 50, 20 * 60 * 50, TimeUnit.MILLISECONDS); // Euphyllia - Use Folia Scheduler
  
          registerBuyCommand();
      }
@@ -52,7 +52,7 @@ index 33fe44a..afa005b 100644
          if (!isEnabled()) return;
  
 -        getServer().getScheduler().runTaskLaterAsynchronously(this, runnable, unit.toMillis(time) / 50);
-+        getServer().getAsyncScheduler().runDelayed(this, task -> runnable.run(), time, unit); // Euphyllia - Use Folia Scheduler
++        getServer().getAsyncScheduler().runDelayed(this, task -> runnable.run(), Math.max(1, time), unit); // Euphyllia - Use Folia Scheduler
      }
  
      @Override
@@ -68,7 +68,7 @@ index 33fe44a..afa005b 100644
          if (!isEnabled()) return;
  
 -        getServer().getScheduler().runTaskLater(this, runnable, unit.toMillis(time) / 50);
-+        getServer().getGlobalRegionScheduler().runDelayed(this, task -> runnable.run(), unit.toMillis(time) / 50); // Euphyllia - Use Folia Scheduler
++        getServer().getGlobalRegionScheduler().runDelayed(this, task -> runnable.run(), Math.max(1, unit.toMillis(time) / 50)); // Euphyllia - Use Folia Scheduler
      }
  
      public Player getPlayer(Object player) {
